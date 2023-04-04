@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Store Search</h1>
+
+<script type="text/javascript">
+    function fetchStore(){
+      let latitude = document.querySelector("#lat");
+      let longitude = document.querySelector("#long");
+      let distance = document.querySelector("#dist");
+      
+      let params = {
+              "longitude": longitude.value,
+              "latitude": latitude.value,
+              "distance": distance.value
+            };
+
+      let query = Object.keys(params)
+             .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+             .join('&');
+           
+      const URL = "http://54.250.248.149/store/get_stores/?"+query;
+      console.log(URL);
+      async function makeAPICall(){
+        try{
+            let result =  await fetch(URL);
+            let data = await result.json();
+            show(data);
+            return data;
+        }catch(err){
+            console.error(err); 
+            return err;
+        }
+      }
+      makeAPICall().then(data =>console.log(data))
+
+      function show(data){
+        let data_arr = data["data"]["data"];
+        data_arr.forEach(store=>{
+            const markup = `<li>${store.store_name}</li>`;
+            document.querySelector('ul').insertAdjacentHTML("beforeend",markup);
+
+        });
+       
+        
+      }
+    };
+</script>
+<form>
+  <label for="lat"> Input Latitude:</label><br>    
+  <input type="number" id="lat" name="lat"><br>
+  <label for="long"> Input Longitude:</label><br>
+  <input type="number" id="long" name="long"><br>
+  <label for="dist">Distance Range:</label><br>
+  <input type="number" id="dist" name="dist">
+</form><br>
+ 
+  <button onclick="fetchStore()">Find Store By Location</button><br>
+  <h1>Your Store Search Results:</h1>
+  <ul>
+
+  </ul>
+
+  
+
+</body>
+</html>
